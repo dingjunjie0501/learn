@@ -403,3 +403,63 @@ ReactDOM.render(
     <Page />,
     document.getElementById('page')
 );
+
+/**
+ * 列表 & Keys
+ */
+
+const numbers = [1, 2, 3, 4, 5];
+const listItems = numbers.map((number) =>
+    <li key={number.toString()}>
+        {number}
+    </li>
+);
+
+ReactDOM.render(
+    <ul>{listItems}</ul>,
+    document.getElementById('listItems')
+);
+
+/**
+ * Keys
+ */
+
+function ListItem(props) {
+    // 这里不需要明确出key:
+    return <li>{props.value}</li>
+}
+function NumberList(props) {
+    const numbers = props.numbers;
+    const listItems = numbers.map((number) =>
+        // key应该在数组中被明确出来
+        <ListItem key={number.toString()} value={number} />
+    );
+    return (
+        <ul>
+            {listItems}
+        </ul>
+    );
+}
+
+// const numbers = [1, 2, 3, 4, 5];
+ReactDOM.render(
+    <NumberList numbers={numbers} />,
+    document.getElementById('numberList')
+);
+
+/**
+ * 元素的key在他的兄弟元素之间应该唯一
+ */
+
+function Blog(props) {
+    const sidebar = (
+        <ul>
+        </ul>
+    );
+    return (null);
+}
+
+const posts = [
+    { id: 1, title: 'Hello World', content: 'Welcome to learning React!' },
+    { id: 2, title: 'Installation', content: 'You can install React from npm.' }
+];
