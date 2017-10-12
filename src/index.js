@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+/**
+ * 更新元素渲染
+ */
 function tick() {
     const element = (
         <div>
@@ -14,6 +17,10 @@ function tick() {
     )
 }
 setInterval(tick, 1000);
+
+/**
+ * 组合组件
+ */
 
 function Welcome(params) {
     return <h1>Hello, {params.name}</h1>
@@ -33,6 +40,10 @@ ReactDOM.render(
     <App />,
     document.getElementById('welcome')
 );
+
+/**
+ * 提取组件
+ */
 
 function formatDate(date) {
     return date.toLocaleDateString();
@@ -86,6 +97,10 @@ ReactDOM.render(
     />,
     document.getElementById('comment')
 );
+
+/**
+ * State & 生命周期
+ */
 
 // Clock设置一个定时器并且每秒更新UI应该是Clock的实现细节
 // function Clock(props) {
@@ -164,6 +179,10 @@ ReactDOM.render(
  * 5.一旦Clock组件被从DOM中移除，React会调用componentWillUnmount()这个钩子函数，定时器也就会被清除。
  */
 
+/**
+ * 事件处理
+ */
+
 function ActionLink() {
     function handleClick(e) {
         e.preventDefault();
@@ -179,6 +198,10 @@ ReactDOM.render(
     document.getElementById('actionLink')
 );
 
+/**
+ * 事件处理
+ */
+
 class Toggle extends React.Component {
     constructor(props) {
         super(props);
@@ -189,8 +212,9 @@ class Toggle extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
-        console.log('this is:', this); //你必须谨慎对待 JSX 回调函数中的 this，类的方法默认是不会绑定 this 的。
-        //如果你忘记绑定 this.handleClick 并把它传入 onClick, 当你调用这个函数的时候 this 的值会是 undefined。
+        console.log('this is:', this); //你必须谨慎对待 JSX 回调函数中的 this，类的方法默认
+        //是不会绑定 this 的。如果你忘记绑定 this.handleClick 并把它传入 onClick, 当你调用
+        //这个函数的时候 this 的值会是 undefined。
         this.setState(prevState => ({
             isToggleOn: !prevState.isToggleOn
         }));
@@ -205,4 +229,177 @@ class Toggle extends React.Component {
 ReactDOM.render(
     <Toggle />,
     document.getElementById('toggle')
+);
+
+/**
+ * 事件处理
+ */
+
+class LoggingButton extends React.Component {
+    handleClick() {
+        console.log('this is:', this);
+    }
+    render() {
+        // This syntax ensures `this` is bound within handleClick
+        return (
+            <button onClick={(e) => this.handleClick(e)}>Click me</button>
+        );
+    }
+}
+
+ReactDOM.render(
+    <LoggingButton />,
+    document.getElementById('loggingButton')
+);
+
+/**
+ * 使用这个语法有个问题就是每次 LoggingButton 渲染的时候都会创建一个不同的回调函数。
+ * 在大多数情况下，这没有问题。然而如果这个回调函数作为一个属性值传入低阶组件，这些组件可
+ * 能会进行额外的重新渲染。我们通常建议在构造函数中绑定或使用属性初始化器语法来避免这类
+ * 性能问题。
+ */
+
+/**
+ * 条件渲染
+ */
+
+function UserGreeting(props) {
+    return <h1>Welcome back!</h1>
+}
+
+function GuestGreeting(props) {
+    return <h1>Please sign up.</h1>
+}
+
+function Greeting(props) {
+    const isLoggedIn = props.isLoggedIn;
+    if (isLoggedIn) {
+        return <UserGreeting />
+    }
+    return <GuestGreeting />
+}
+
+ReactDOM.render(
+    <Greeting isLoggedIn={false} />,
+    document.getElementById('greeting')
+);
+
+/**
+ * 元素变量
+ */
+
+function LoginButton(props) {
+    return (
+        <button onClick={props.onClick}>Login</button>
+    );
+}
+
+function LogoutButton(props) {
+    return (
+        <button onClick={props.onClick}>Logout</button>
+    );
+}
+
+class LoginControl extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleLoginClick = this.handleLoginClick.bind(this);
+        this.handleLogoutClick = this.handleLogoutClick.bind(this);
+        this.state = { isLoggedIn: false };
+    }
+    handleLoginClick() {
+        this.setState({ isLoggedIn: true });
+    }
+    handleLogoutClick() {
+        this.setState({ isLoggedIn: false });
+    }
+    render() {
+        const isLoggedIn = this.state.isLoggedIn;
+
+        let button = null;
+        if (isLoggedIn) {
+            button = <LogoutButton onClick={this.handleLogoutClick} />;
+        } else {
+            button = <LoginButton onClick={this.handleLoginClick} />
+        }
+
+        return (
+            <div>
+                <Greeting isLoggedIn={isLoggedIn} />
+                {button}
+            </div>
+        );
+    }
+}
+
+ReactDOM.render(
+    <LoginControl />,
+    document.getElementById('loginControl')
+);
+
+/**
+ * 与运算符 &&
+ */
+
+function Mailbox(props) {
+    const unreadMessages = props.unreadMessages;
+    return (
+        <div>
+            <h1>Hello!</h1>
+            {unreadMessages.length > 0 &&
+                <h2>
+                    You have {unreadMessages.length} unread messages.
+                </h2>
+            }
+        </div>
+    );
+}
+
+const message = ['React', 'Re: React', 'Re:Re: React'];
+ReactDOM.render(
+    <Mailbox unreadMessages={message} />,
+    document.getElementById('mailbox')
+);
+
+/**
+ * 阻止组件渲染
+ */
+
+function WarningBanner(props) {
+    if (!props.warn) {
+        return null; // 组件的 render 方法返回 null 并不会影响该组件生命周期方法的回调。
+        // 例如，componentWillUpdate 和 componentDidUpdate 依然可以被调用。
+    }
+
+    return (
+        <div className="warning">
+            Warning!
+        </div>
+    );
+}
+
+class Page extends React.Component {
+    constructor(props) {
+        super(props);
+        this.handleToggleClick = this.handleToggleClick.bind(this);
+        this.state = { showWarning: true };
+    }
+    handleToggleClick() {
+        this.setState(prevState => ({
+            showWarning: !prevState.showWarning
+        }));
+    }
+    render() {
+        return (
+            <div>
+                <WarningBanner warn={this.state.showWarning} />
+                <button onClick={this.handleToggleClick}>{this.state.showWarning ? 'Hide' : 'Show'}</button>
+            </div>
+        );
+    }
+}
+
+ReactDOM.render(
+    <Page />,
+    document.getElementById('page')
 );
