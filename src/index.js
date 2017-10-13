@@ -185,6 +185,7 @@ ReactDOM.render(
 
 function ActionLink() {
     function handleClick(e) {
+        // 在 React 中另一个不同是你不能使用返回 false 的方式阻止默认行为。你必须明确的使用 preventDefault。
         e.preventDefault();
         console.log('The link was clicked.');
     }
@@ -410,6 +411,7 @@ ReactDOM.render(
 
 const numbers = [1, 2, 3, 4, 5];
 const listItems = numbers.map((number) =>
+    // 一个元素的key最好是这个元素在列表中拥有的一个独一无二的字符串
     <li key={number.toString()}>
         {number}
     </li>
@@ -454,12 +456,224 @@ ReactDOM.render(
 function Blog(props) {
     const sidebar = (
         <ul>
+            {props.posts.map((post) =>
+                <li key={post.id}>
+                    {post.title}
+                </li>
+            )}
         </ul>
     );
-    return (null);
+    const content = props.posts.map((post) =>
+        //key会作为给React的提示，但不会传递给你的组件。
+        //如果您的组件中需要使用和key相同的值，请将其作为属性传递
+        <div key={post.id} title={post.title}>
+            <h3>{post.title}</h3>
+            <p>{post.content}</p>
+        </div>
+    );
+    return (
+        <div>
+            {sidebar}
+            <hr />
+            {content}
+        </div>
+    );
 }
 
 const posts = [
     { id: 1, title: 'Hello World', content: 'Welcome to learning React!' },
     { id: 2, title: 'Installation', content: 'You can install React from npm.' }
 ];
+
+ReactDOM.render(
+    <Blog posts={posts} />,
+    document.getElementById('blog')
+);
+
+/**
+ * 在jsx中嵌入map()
+ */
+
+function ListItem1(props) {
+    // 这里不需要明确出key:
+    return <li>{props.value}</li>
+}
+function NumberList1(props) {
+    const numbers = props.numbers;
+    // const listItems = numbers.map((number) =>
+    //     // key应该在数组中被明确出来
+    //     <ListItem1 key={number.toString()} value={number} />
+    // );
+    return (
+        <ul>
+            {numbers.map((number) =>
+                <ListItem1 key={number.toString()} value={number} />
+            )}
+        </ul>
+    );
+}
+
+// const numbers = [1, 2, 3, 4, 5];
+ReactDOM.render(
+    <NumberList1 numbers={numbers} />,
+    document.getElementById('numberList1')
+);
+
+/**
+ * 受控组件
+ */
+
+class NameForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: '' }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({ value: event.target.value })
+    }
+    handleSubmit(event) {
+        alert('A name was submitted: ' + this.state.value);
+        //当用户提交表单时，HTML的默认行为会使这个表单会跳转到一个新页面。在React中亦是如此。
+        //在 React 中另一个不同是你不能使用返回 false 的方式阻止默认行为。
+        event.preventDefault();//你必须明确的使用 preventDefault。
+
+    }
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit} >
+                <label>
+                    Name:
+                    <input type="text" value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit" value="Submit" />
+            </form>
+        );
+    }
+}
+ReactDOM.render(
+    <NameForm />,
+    document.getElementById('nameForm')
+);
+
+/**
+ * textarea标签
+ */
+
+class EssayForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: 'Please write an essay about your favorite DOM element.' };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({ value: event.target.value })
+    }
+    handleSubmit(event) {
+        alert('An essay was submitted: ' + this.state.value);
+        event.preventDefault();
+    }
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    Name:
+                    <textarea value={this.state.value} onChange={this.handleChange} />
+                </label>
+                <input type="submit" value="Submit" />
+            </form>
+        );
+    }
+}
+ReactDOM.render(
+    <EssayForm />,
+    document.getElementById('essayForm')
+);
+
+/**
+ * select标签
+ */
+
+class FlavorForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { value: 'coconut' };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({ value: event.target.value });
+    }
+    handleSubmit(event) {
+        alert('Your favorite flavor is: ' + this.state.value);
+        event.preventDefault();
+    }
+    render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <label>
+                    Pick your favorite La Croix flavor:
+                    {/*在React中，会在根select标签上而不是在当前的selected属性上使用value属性。*/}
+                    <select value={this.state.value} onChange={this.handleChange}>
+                        <option value="grapefruit">Grapefruit</option>
+                        <option value="lime">Lime</option>
+                        <option value="coconut">Coconut</option>
+                        <option value="mango">Mango</option>
+                    </select>
+                </label>
+                <input type="submit" value="Submit" />
+            </form>
+        );
+    }
+}
+ReactDOM.render(
+    <FlavorForm />,
+    document.getElementById('flavorForm')
+);
+
+/**
+ * 多个输入的解决方法
+ */
+
+class Reservation extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isGoing: true,
+            numberOfGuests: 2
+        }
+        this.handleInputChange = this.handleInputChange.bind(this);
+    }
+    handleInputChange(event) {
+        //当你有处理多个受控的input元素时，你可以通过给每个元素添加一个name属性，来让处理函数根据 event.target.name的值来选择做什么。
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
+    }
+    render() {
+        return (
+            <form>
+                <label>
+                    Is going:
+                    <input name='isGoing' type="checkbox" checked={this.state.isGoing} onChange={this.handleInputChange} />
+                </label>
+                <br />
+                <label>
+                    Number of guests:
+                    <input name='numberOfGuests' type="number" value={this.state.numberOfGuests} onChange={this.handleInputChange} />
+                </label>
+            </form>
+        );
+    }
+}
+ReactDOM.render(
+    <Reservation />,
+    document.getElementById('reservation')
+);
