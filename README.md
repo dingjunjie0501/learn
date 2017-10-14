@@ -1,3 +1,4 @@
+```bash
 npm init -y
 npm install --save-dev webpack
 npm install --save-dev html-webpack-plugin
@@ -9,3 +10,4 @@ npm install react react-dom --save
 npm install --save-dev babel-cli babel-preset-react
 npm install --save-dev babel-cli babel-preset-es2015
 npm install --save-dev babel-loader babel-core
+```
