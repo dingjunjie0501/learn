@@ -10,4 +10,6 @@ npm install react react-dom --save
 npm install --save-dev babel-cli babel-preset-react
 npm install --save-dev babel-cli babel-preset-es2015
 npm install --save-dev babel-loader babel-core
+npm install --save-dev uglify-js-brunch
+npm install --save-dev uglifyjs-webpack-plugin
 ```

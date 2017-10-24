@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './depth.js'
 
 /**
  * 更新元素渲染
@@ -340,6 +341,11 @@ ReactDOM.render(
 
 /**
  * 与运算符 &&
+ * 
+ * 之所以能这样做，是因为在 JavaScript 中，true && expression 总是返回 expression，而 false && expression 总是返回 false。
+ * 因此，如果条件是 true，&& 右侧的元素就会被渲染，如果是 false，React 会忽略并跳过它。
+ * 
+ * 值得注意的是，React 提供了一些 “falsy” 值 （即， 除了false 外，0，“”，null，undefined 和 NaN），它们依然会被渲染。
  */
 
 function Mailbox(props) {
@@ -1017,3 +1023,4 @@ ReactDOM.render(
  * 它随着时间推移不变吗？如果是，它可能不是 state。
  * 你能够根据组件中任何其他的 state 或 props 把它计算出来吗？如果是，它不是 state。
  */
+
